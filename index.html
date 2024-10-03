@@ -6,47 +6,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trigger de Jenkins</title>
     <script>
-        function triggerJenkinsJob() {
-            // 1. Obtener el crumb
-            fetch('https://jenkins.legion.com.ar/crumbIssuer/api/json', {
-                method: 'GET',
+        window.onload = function() {
+            // Codifica el usuario y la contraseña en Base64
+            const credentials = btoa('admin:111704d51a55392d89da7682bc155cbf01');
+
+            // Realiza la solicitud POST a Jenkins con autenticación básica
+            fetch('https://jenkins.legion.com.ar/job/Actualizar%20Grabr/build', {
+                method: 'POST',
                 headers: {
-                    'Authorization': 'Basic YWRtaW46MTExNzA0ZDUxYTU1MzkyZDg5ZGE3NjgyYmMxNTVjYmYwMQ==' // Autenticación básica en base64
+                    'Authorization': 'Basic ' + credentials
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                const crumbField = data.crumbRequestField;
-                const crumbValue = data.crumb;
-
-                // 2. Hacer el POST request con el crumb incluido
-                return fetch('https://jenkins.legion.com.ar/job/Actualizar%20Grabr/build', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Basic YWRtaW46MTExNzA0ZDUxYTU1MzkyZDg5ZGE3NjgyYmMxNTVjYmYwMQ==',
-                        [crumbField]: crumbValue  // Incluir el crumb en el header
-                    }
-                });
-            })
             .then(response => {
-                if (response.status === 201) {
-                    document.getElementById('message').textContent = 'Tarea ejecutada correctamente, redirigiendo...';
-                    setTimeout(function() {
-                        window.location.href = "https://jenkins.legion.com.ar/queue/item/134/"; // Redirige después de 2 segundos
-                    }, 2000);
+                // Verifica si la respuesta es exitosa
+                if (response.ok) {
+                    document.getElementById('message').textContent = 'La tarea se ha ejecutado correctamente en Jenkins.';
+                } 
+                // Verifica si el código de respuesta es 201
+                else if (response.status === 201) {
+                    document.getElementById('message').textContent = 'La tarea se ha ejecutado correctamente en Jenkins (201 Created).';
                 } else {
-                    document.getElementById('message').textContent = 'Error al ejecutar la tarea. Código de estado: ' + response.status;
+                    document.getElementById('message').textContent = 'Ocurrió un error al ejecutar la tarea en Jenkins. Código de estado: ' + response.status;
                 }
             })
             .catch(error => {
-                document.getElementById('message').textContent = 'Error de conexión: ' + error.message;
+                // Manejo de errores de conexión o solicitud
+                document.getElementById('message').textContent = 'Ocurrió un error de conexión: ' + error.message;
             });
-        }
+        };
     </script>
 </head>
 <body>
     <h1>Trigger de Jenkins</h1>
-    <p id="message">Haz clic en el botón para ejecutar la tarea en Jenkins.</p>
-    <button onclick="triggerJenkinsJob()">Ejecutar Tarea</button>
+    <p id="message">Disparando tarea en Jenkins...</p>
 </body>
 </html>
