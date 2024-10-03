@@ -7,30 +7,23 @@
     <title>Trigger de Jenkins</title>
     <script>
         window.onload = function() {
-            // Codifica el usuario y la contraseña en Base64
-            const credentials = btoa('admin:111704d51a55392d89da7682bc155cbf01');
-
-            // Realiza la solicitud POST a Jenkins con autenticación básica
+            // Dispara la tarea de Jenkins con autenticación básica
             fetch('https://jenkins.legion.com.ar/job/Actualizar%20Grabr/build', {
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Basic ' + credentials
+                    'Authorization': 'Basic YWRtaW46MTExNzA0ZDUxYTU1MzkyZDg5ZGE3NjgyYmMxNTVjYmYwMQ==' // Autenticación en base64
                 }
             })
             .then(response => {
-                // Verifica si la respuesta es exitosa
-                if (response.ok) {
-                    document.getElementById('message').textContent = 'La tarea se ha ejecutado correctamente en Jenkins.';
-                } 
                 // Verifica si el código de respuesta es 201
-                else if (response.status === 201) {
+                if (response.status === 201) {
                     document.getElementById('message').textContent = 'La tarea se ha ejecutado correctamente en Jenkins (201 Created).';
                 } else {
                     document.getElementById('message').textContent = 'Ocurrió un error al ejecutar la tarea en Jenkins. Código de estado: ' + response.status;
                 }
             })
             .catch(error => {
-                // Manejo de errores de conexión o solicitud
+                // En caso de que falle la conexión
                 document.getElementById('message').textContent = 'Ocurrió un error de conexión: ' + error.message;
             });
         };
