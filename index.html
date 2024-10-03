@@ -7,27 +7,38 @@
     <title>Trigger de Jenkins</title>
     <script>
         function triggerJenkinsJob() {
-            // Enviar el POST request a Jenkins
-            fetch('https://jenkins.legion.com.ar/job/Actualizar%20Grabr/build', {
-                method: 'POST',
+            // 1. Obtener el crumb
+            fetch('https://jenkins.legion.com.ar/crumbIssuer/api/json', {
+                method: 'GET',
                 headers: {
-                    'Authorization': 'Basic YWRtaW46MTExNzA0ZDUxYTU1MzkyZDg5ZGE3NjgyYmMxNTVjYmYwMQ==' // Autenticación en base64
+                    'Authorization': 'Basic YWRtaW46MTExNzA0ZDUxYTU1MzkyZDg5ZGE3NjgyYmMxNTVjYmYwMQ==' // Autenticación básica en base64
                 }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const crumbField = data.crumbRequestField;
+                const crumbValue = data.crumb;
+
+                // 2. Hacer el POST request con el crumb incluido
+                return fetch('https://jenkins.legion.com.ar/job/Actualizar%20Grabr/build', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Basic YWRtaW46MTExNzA0ZDUxYTU1MzkyZDg5ZGE3NjgyYmMxNTVjYmYwMQ==',
+                        [crumbField]: crumbValue  // Incluir el crumb en el header
+                    }
+                });
             })
             .then(response => {
                 if (response.status === 201) {
-                    // Si el código de respuesta es 201, redirigir
                     document.getElementById('message').textContent = 'Tarea ejecutada correctamente, redirigiendo...';
                     setTimeout(function() {
-                        window.location.href = "https://jenkins.legion.com.ar/queue/item/134/"; // Redirige a la URL de Jenkins
-                    }, 2000); // Redirige después de 2 segundos
+                        window.location.href = "https://jenkins.legion.com.ar/queue/item/134/"; // Redirige después de 2 segundos
+                    }, 2000);
                 } else {
-                    // Manejar otros códigos de estado
                     document.getElementById('message').textContent = 'Error al ejecutar la tarea. Código de estado: ' + response.status;
                 }
             })
             .catch(error => {
-                // Manejo de errores de conexión
                 document.getElementById('message').textContent = 'Error de conexión: ' + error.message;
             });
         }
