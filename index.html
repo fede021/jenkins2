@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trigger de Jenkins</title>
     <script>
-        window.onload = function() {
-            // Dispara la tarea de Jenkins con autenticación básica
+        function triggerJenkinsJob() {
+            // Enviar el POST request a Jenkins
             fetch('https://jenkins.legion.com.ar/job/Actualizar%20Grabr/build', {
                 method: 'POST',
                 headers: {
@@ -15,22 +15,27 @@
                 }
             })
             .then(response => {
-                // Verifica si el código de respuesta es 201
                 if (response.status === 201) {
-                    document.getElementById('message').textContent = 'La tarea se ha ejecutado correctamente en Jenkins (201 Created).';
+                    // Si el código de respuesta es 201, redirigir
+                    document.getElementById('message').textContent = 'Tarea ejecutada correctamente, redirigiendo...';
+                    setTimeout(function() {
+                        window.location.href = "https://jenkins.legion.com.ar/queue/item/134/"; // Redirige a la URL de Jenkins
+                    }, 2000); // Redirige después de 2 segundos
                 } else {
-                    document.getElementById('message').textContent = 'Ocurrió un error al ejecutar la tarea en Jenkins. Código de estado: ' + response.status;
+                    // Manejar otros códigos de estado
+                    document.getElementById('message').textContent = 'Error al ejecutar la tarea. Código de estado: ' + response.status;
                 }
             })
             .catch(error => {
-                // En caso de que falle la conexión
-                document.getElementById('message').textContent = 'Ocurrió un error de conexión: ' + error.message;
+                // Manejo de errores de conexión
+                document.getElementById('message').textContent = 'Error de conexión: ' + error.message;
             });
-        };
+        }
     </script>
 </head>
 <body>
     <h1>Trigger de Jenkins</h1>
-    <p id="message">Disparando tarea en Jenkins...</p>
+    <p id="message">Haz clic en el botón para ejecutar la tarea en Jenkins.</p>
+    <button onclick="triggerJenkinsJob()">Ejecutar Tarea</button>
 </body>
 </html>
