@@ -2,35 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trigger de Jenkins</title>
-    <script>
-        window.onload = function() {
-            // Dispara la tarea de Jenkins con autenticación básica
-            fetch('https://jenkins.legion.com.ar/job/Actualizar%20Grabr/build', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Basic YWRtaW46MTExNzA0ZDUxYTU1MzkyZDg5ZGE3NjgyYmMxNTVjYmYwMQ==' // Autenticación en base64
-                }
-            })
-            .then(response => {
-                // Verifica si el código de respuesta es 201
-                if (response.status === 201) {
-                    document.getElementById('message').textContent = 'La tarea se ha ejecutado correctamente en Jenkins (201 Created).';
-                } else {
-                    document.getElementById('message').textContent = 'Ocurrió un error al ejecutar la tarea en Jenkins. Código de estado: ' + response.status;
-                }
-            })
-            .catch(error => {
-                // En caso de que falle la conexión
-                document.getElementById('message').textContent = 'Ocurrió un error de conexión: ' + error.message;
-            });
-        };
-    </script>
+    <title>Trigger Jenkins</title>
 </head>
 <body>
     <h1>Trigger de Jenkins</h1>
-    <p id="message">Disparando tarea en Jenkins...</p>
+    <p id="message">Haz clic en el botón para ejecutar la tarea en Jenkins.</p>
+    <form action="trigger.php" method="POST">
+        <button type="submit">Ejecutar Tarea</button>
+    </form>
 </body>
 </html>
